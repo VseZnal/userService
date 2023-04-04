@@ -1,8 +1,6 @@
 package config
 
 import (
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"userService/libs/utils"
 )
 
@@ -31,8 +29,3 @@ func UserConfig() *Config {
 		Refresh:      utils.TrimEnv(refreshSecret),
 	}
 }
-
-var (
-	ErrPasswordIsEmpty = status.Error(codes.InvalidArgument, "Password не задан")
-	ErrUserNameIsEmpty = status.Error(codes.InvalidArgument, "username не задан")
-)
