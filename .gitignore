@@ -1,0 +1,6 @@
+# Local env vars
+.env.local
+.env
+
+# local files
+dump
