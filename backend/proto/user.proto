@@ -1,0 +1,129 @@
+syntax = "proto3";
+package pb;
+option go_package = "/services/user-service/proto-list-user-service";
+
+import "backend/google/api/annotations.proto";
+import "backend/google/api/validate.proto";
+
+service UserService {
+
+  //test private method
+  rpc RandomPrivateMethod(RandomPrivateMethodRequest) returns (RandomPrivateMethodResponse) {
+    option (google.api.http) = {
+      get: "/private"
+    };
+  }
+
+  //Sign up
+  rpc SignUp (SignUpRequest) returns (SignUpResponse) {
+    option (google.api.http) = {
+      post: "/signup"
+      body: "*"
+    };
+  }
+
+  // Auth
+  rpc SignIn (SignInRequest) returns (SignInResponse) {
+    option (google.api.http) = {
+      post: "/signin"
+      body: "*"
+    };
+  }
+
+  // Logout
+  rpc LogOut (LogOutRequest) returns (LogOutResponse) {
+    option (google.api.http) = {
+      get: "/logout"
+    };
+  }
+
+  // Refresh token
+  rpc Refresh (RefreshRequest) returns (RefreshResponse) {
+    option (google.api.http) = {
+      post: "/refresh"
+      body: "*"
+    };
+  }
+
+}
+
+//------------------------------------------------------------------------------------------------------------------
+//  test private method
+//------------------------------------------------------------------------------------------------------------------
+
+message RandomPrivateMethodRequest {
+}
+
+message RandomPrivateMethodResponse {
+  string msg = 1;
+}
+
+//------------------------------------------------------------------------------------------------------------------
+//  Sign up
+//------------------------------------------------------------------------------------------------------------------
+
+message SignUpRequest {
+  string username = 1 [(validate.rules).string = {min_len: 1, max_len: 30}];
+  string password = 2 [(validate.rules).string = {min_len: 1, max_len: 50}];
+}
+
+message SignUpResponse {
+  int64  id = 1;
+}
+
+//------------------------------------------------------------------------------------------------------------------
+//  Refresh
+//------------------------------------------------------------------------------------------------------------------
+
+message RefreshRequest {
+  string token = 1 [(validate.rules).string = {min_len: 1, max_len: 1000}];
+}
+
+message RefreshResponse {
+  Token  token = 1;
+}
+
+//------------------------------------------------------------------------------------------------------------------
+//  SignIn
+//------------------------------------------------------------------------------------------------------------------
+
+message SignInRequest {
+  string username = 1 [(validate.rules).string = {min_len: 1, max_len: 30}];
+  string password = 2 [(validate.rules).string = {min_len: 1, max_len: 50}];
+}
+
+message SignInResponse {
+  int64  id = 1;
+  string username = 2;
+  Token  token = 5;
+}
+
+//------------------------------------------------------------------------------------------------------------------
+//  LogOut
+//------------------------------------------------------------------------------------------------------------------
+
+message LogOutRequest {
+  string token = 1 [(validate.rules).string = {min_len: 1, max_len: 1000}];
+}
+
+message LogOutResponse {
+}
+
+//------------------------------------------------------------------------------------------------------------------
+//  Token
+//------------------------------------------------------------------------------------------------------------------
+
+message Token {
+  string access = 1;
+  string refresh = 2;
+}
+
+//------------------------------------------------------------------------------------------------------------------
+//  User
+//------------------------------------------------------------------------------------------------------------------
+
+message User {
+  int64  id = 1;
+  string username = 2;
+  string password = 3;
+}
