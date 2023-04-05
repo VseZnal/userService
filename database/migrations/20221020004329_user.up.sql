@@ -24,7 +24,7 @@ $$ LANGUAGE plpgsql strict immutable;
 CREATE SEQUENCE users_id_seq;
 
 CREATE TABLE users (
-    id          BIGINT PRIMARY KEY NOT NULL DEFAULT pseudo_encrypt(nextval('users_id_seq')::BIGINT),
+    id          BIGINT NOT NULL DEFAULT pseudo_encrypt(nextval('users_id_seq')::BIGINT),
     username    TEXT NOT NULL ,
     password    TEXT NOT NULL
 );
