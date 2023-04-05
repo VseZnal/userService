@@ -25,6 +25,7 @@ func AccessLogInterceptor(
 
 	private := map[string]bool{
 		"/pb.UserService/RandomPrivateMethod": false,
+		"/pb.UserService/RefreshPassword":     false,
 	}
 
 	var traceId string
@@ -33,6 +34,13 @@ func AccessLogInterceptor(
 			if len(md["authorization"]) > 0 {
 				tokenString := md["authorization"][0]
 				if tokenString != "" {
+					if k == "/pb.UserService/RefreshPassword" {
+						err, _ := jwt_user.CheckRefreshPasswordToken(tokenString)
+						if err != nil {
+							return errors.New("your token is invalid")
+						}
+						break
+					}
 					err, _ := jwt_user.CheckJWTToken(tokenString)
 					if err != nil {
 						return errors.New("your token is invalid")
