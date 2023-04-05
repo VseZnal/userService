@@ -134,7 +134,7 @@ func (db DatabaseConn) SignIn(user *user_service.User) (*user_service.User, erro
 		&userOut.Username,
 	)
 	if err != nil {
-		return nil, customErr.HandleDatabaseError(err)
+		return nil, errors.New("user not found")
 	}
 
 	return userOut, err
