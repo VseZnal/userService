@@ -1,0 +1,8 @@
+Proto file generation (user):
+protoc -I . --grpc-gateway_out ./backend/services/api-gateway/proto/user-service  --grpc-gateway_opt logtostderr=true  --grpc-gateway_opt paths=source_relative  backend/proto/user.proto
+
+protoc -I .  --go_out ./backend/services/api-gateway/proto/user-service --go_opt paths=source_relative  --go-grpc_out ./backend/services/api-gateway/proto/user-service --go-grpc_opt paths=source_relative  backend/proto/user.proto
+
+protoc -I .  --go_out ./backend/services/user-service/proto/user-service --go_opt paths=source_relative  --go-grpc_out ./backend/services/user-service/proto/user-service --go-grpc_opt paths=source_relative  backend/proto/user.proto
+
+protoc -I . --validate_out=paths=source_relative,lang=go:. backend/proto/user.proto
