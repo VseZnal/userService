@@ -22,6 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
+	// test private method
+	RandomPrivateMethod(ctx context.Context, in *RandomPrivateMethodRequest, opts ...grpc.CallOption) (*RandomPrivateMethodResponse, error)
 	// Sign up
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error)
 	// Auth
@@ -38,6 +40,15 @@ type userServiceClient struct {
 
 func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
+}
+
+func (c *userServiceClient) RandomPrivateMethod(ctx context.Context, in *RandomPrivateMethodRequest, opts ...grpc.CallOption) (*RandomPrivateMethodResponse, error) {
+	out := new(RandomPrivateMethodResponse)
+	err := c.cc.Invoke(ctx, "/pb.UserService/RandomPrivateMethod", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *userServiceClient) SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error) {
@@ -80,6 +91,8 @@ func (c *userServiceClient) Refresh(ctx context.Context, in *RefreshRequest, opt
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
+	// test private method
+	RandomPrivateMethod(context.Context, *RandomPrivateMethodRequest) (*RandomPrivateMethodResponse, error)
 	// Sign up
 	SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error)
 	// Auth
@@ -95,6 +108,9 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
+func (UnimplementedUserServiceServer) RandomPrivateMethod(context.Context, *RandomPrivateMethodRequest) (*RandomPrivateMethodResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RandomPrivateMethod not implemented")
+}
 func (UnimplementedUserServiceServer) SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
 }
@@ -118,6 +134,24 @@ type UnsafeUserServiceServer interface {
 
 func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 	s.RegisterService(&UserService_ServiceDesc, srv)
+}
+
+func _UserService_RandomPrivateMethod_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RandomPrivateMethodRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RandomPrivateMethod(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.UserService/RandomPrivateMethod",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RandomPrivateMethod(ctx, req.(*RandomPrivateMethodRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_SignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -199,6 +233,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "pb.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "RandomPrivateMethod",
+			Handler:    _UserService_RandomPrivateMethod_Handler,
+		},
 		{
 			MethodName: "SignUp",
 			Handler:    _UserService_SignUp_Handler,
