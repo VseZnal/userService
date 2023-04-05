@@ -38,6 +38,7 @@ services:
       USER_SERVICE_PORT: 8086
       JWT_SECRET: '${JWT_SECRET}'
       REFRESH_SECRET: '${REFRESH_SECRET}'
+      REFRESH_PASSWORD_TOKEN: '${REFRESH_PASSWORD_TOKEN}'
     ports:
     - "${API_PORT}:8000"
     networks:
@@ -58,6 +59,7 @@ services:
       USER_SERVICE_PORT: 8086
       JWT_SECRET: '${JWT_SECRET}'
       REFRESH_SECRET: '${REFRESH_SECRET}'
+      REFRESH_PASSWORD_TOKEN: '${REFRESH_PASSWORD_TOKEN}'
       PG_CONNECTION_STRING: "postgres://${PG_USER}:${PG_PASSWORD}@postgres:5432/${PG_DB}?sslmode=${PG_SSL}"
     networks:
       - mainnet
