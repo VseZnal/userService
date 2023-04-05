@@ -24,6 +24,10 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	// test private method
 	RandomPrivateMethod(ctx context.Context, in *RandomPrivateMethodRequest, opts ...grpc.CallOption) (*RandomPrivateMethodResponse, error)
+	// refresh password
+	RefreshPassword(ctx context.Context, in *RefreshPasswordRequest, opts ...grpc.CallOption) (*RefreshPasswordResponse, error)
+	// code to phone
+	GetCode(ctx context.Context, in *GetCodeRequest, opts ...grpc.CallOption) (*GetCodeResponse, error)
 	// Sign up
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error)
 	// Auth
@@ -45,6 +49,24 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 func (c *userServiceClient) RandomPrivateMethod(ctx context.Context, in *RandomPrivateMethodRequest, opts ...grpc.CallOption) (*RandomPrivateMethodResponse, error) {
 	out := new(RandomPrivateMethodResponse)
 	err := c.cc.Invoke(ctx, "/pb.UserService/RandomPrivateMethod", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) RefreshPassword(ctx context.Context, in *RefreshPasswordRequest, opts ...grpc.CallOption) (*RefreshPasswordResponse, error) {
+	out := new(RefreshPasswordResponse)
+	err := c.cc.Invoke(ctx, "/pb.UserService/RefreshPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetCode(ctx context.Context, in *GetCodeRequest, opts ...grpc.CallOption) (*GetCodeResponse, error) {
+	out := new(GetCodeResponse)
+	err := c.cc.Invoke(ctx, "/pb.UserService/GetCode", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,6 +115,10 @@ func (c *userServiceClient) Refresh(ctx context.Context, in *RefreshRequest, opt
 type UserServiceServer interface {
 	// test private method
 	RandomPrivateMethod(context.Context, *RandomPrivateMethodRequest) (*RandomPrivateMethodResponse, error)
+	// refresh password
+	RefreshPassword(context.Context, *RefreshPasswordRequest) (*RefreshPasswordResponse, error)
+	// code to phone
+	GetCode(context.Context, *GetCodeRequest) (*GetCodeResponse, error)
 	// Sign up
 	SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error)
 	// Auth
@@ -110,6 +136,12 @@ type UnimplementedUserServiceServer struct {
 
 func (UnimplementedUserServiceServer) RandomPrivateMethod(context.Context, *RandomPrivateMethodRequest) (*RandomPrivateMethodResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RandomPrivateMethod not implemented")
+}
+func (UnimplementedUserServiceServer) RefreshPassword(context.Context, *RefreshPasswordRequest) (*RefreshPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshPassword not implemented")
+}
+func (UnimplementedUserServiceServer) GetCode(context.Context, *GetCodeRequest) (*GetCodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCode not implemented")
 }
 func (UnimplementedUserServiceServer) SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
@@ -150,6 +182,42 @@ func _UserService_RandomPrivateMethod_Handler(srv interface{}, ctx context.Conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).RandomPrivateMethod(ctx, req.(*RandomPrivateMethodRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_RefreshPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RefreshPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.UserService/RefreshPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RefreshPassword(ctx, req.(*RefreshPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.UserService/GetCode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetCode(ctx, req.(*GetCodeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -236,6 +304,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RandomPrivateMethod",
 			Handler:    _UserService_RandomPrivateMethod_Handler,
+		},
+		{
+			MethodName: "RefreshPassword",
+			Handler:    _UserService_RefreshPassword_Handler,
+		},
+		{
+			MethodName: "GetCode",
+			Handler:    _UserService_GetCode_Handler,
 		},
 		{
 			MethodName: "SignUp",

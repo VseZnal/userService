@@ -35,6 +35,460 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on RefreshPasswordRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *RefreshPasswordRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RefreshPasswordRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// RefreshPasswordRequestMultiError, or nil if none found.
+func (m *RefreshPasswordRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RefreshPasswordRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if l := utf8.RuneCountInString(m.GetCode()); l < 1 || l > 30 {
+		err := RefreshPasswordRequestValidationError{
+			field:  "Code",
+			reason: "value length must be between 1 and 30 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetUsername()); l < 1 || l > 30 {
+		err := RefreshPasswordRequestValidationError{
+			field:  "Username",
+			reason: "value length must be between 1 and 30 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetPassword()); l < 1 || l > 50 {
+		err := RefreshPasswordRequestValidationError{
+			field:  "Password",
+			reason: "value length must be between 1 and 50 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return RefreshPasswordRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// RefreshPasswordRequestMultiError is an error wrapping multiple validation
+// errors returned by RefreshPasswordRequest.ValidateAll() if the designated
+// constraints aren't met.
+type RefreshPasswordRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RefreshPasswordRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RefreshPasswordRequestMultiError) AllErrors() []error { return m }
+
+// RefreshPasswordRequestValidationError is the validation error returned by
+// RefreshPasswordRequest.Validate if the designated constraints aren't met.
+type RefreshPasswordRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RefreshPasswordRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RefreshPasswordRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RefreshPasswordRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RefreshPasswordRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RefreshPasswordRequestValidationError) ErrorName() string {
+	return "RefreshPasswordRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e RefreshPasswordRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRefreshPasswordRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RefreshPasswordRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RefreshPasswordRequestValidationError{}
+
+// Validate checks the field values on RefreshPasswordResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *RefreshPasswordResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RefreshPasswordResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// RefreshPasswordResponseMultiError, or nil if none found.
+func (m *RefreshPasswordResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RefreshPasswordResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Msg
+
+	if len(errors) > 0 {
+		return RefreshPasswordResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// RefreshPasswordResponseMultiError is an error wrapping multiple validation
+// errors returned by RefreshPasswordResponse.ValidateAll() if the designated
+// constraints aren't met.
+type RefreshPasswordResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RefreshPasswordResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RefreshPasswordResponseMultiError) AllErrors() []error { return m }
+
+// RefreshPasswordResponseValidationError is the validation error returned by
+// RefreshPasswordResponse.Validate if the designated constraints aren't met.
+type RefreshPasswordResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RefreshPasswordResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RefreshPasswordResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RefreshPasswordResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RefreshPasswordResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RefreshPasswordResponseValidationError) ErrorName() string {
+	return "RefreshPasswordResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e RefreshPasswordResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRefreshPasswordResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RefreshPasswordResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RefreshPasswordResponseValidationError{}
+
+// Validate checks the field values on GetCodeRequest with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *GetCodeRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetCodeRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in GetCodeRequestMultiError,
+// or nil if none found.
+func (m *GetCodeRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetCodeRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if l := utf8.RuneCountInString(m.GetUsername()); l < 1 || l > 30 {
+		err := GetCodeRequestValidationError{
+			field:  "Username",
+			reason: "value length must be between 1 and 30 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return GetCodeRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetCodeRequestMultiError is an error wrapping multiple validation errors
+// returned by GetCodeRequest.ValidateAll() if the designated constraints
+// aren't met.
+type GetCodeRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetCodeRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetCodeRequestMultiError) AllErrors() []error { return m }
+
+// GetCodeRequestValidationError is the validation error returned by
+// GetCodeRequest.Validate if the designated constraints aren't met.
+type GetCodeRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetCodeRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetCodeRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetCodeRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetCodeRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetCodeRequestValidationError) ErrorName() string { return "GetCodeRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GetCodeRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetCodeRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetCodeRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetCodeRequestValidationError{}
+
+// Validate checks the field values on GetCodeResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetCodeResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetCodeResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetCodeResponseMultiError, or nil if none found.
+func (m *GetCodeResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetCodeResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Code
+
+	// no validation rules for Token
+
+	if len(errors) > 0 {
+		return GetCodeResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetCodeResponseMultiError is an error wrapping multiple validation errors
+// returned by GetCodeResponse.ValidateAll() if the designated constraints
+// aren't met.
+type GetCodeResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetCodeResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetCodeResponseMultiError) AllErrors() []error { return m }
+
+// GetCodeResponseValidationError is the validation error returned by
+// GetCodeResponse.Validate if the designated constraints aren't met.
+type GetCodeResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetCodeResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetCodeResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetCodeResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetCodeResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetCodeResponseValidationError) ErrorName() string { return "GetCodeResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GetCodeResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetCodeResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetCodeResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetCodeResponseValidationError{}
+
 // Validate checks the field values on RandomPrivateMethodRequest with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
