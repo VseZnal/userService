@@ -2,9 +2,10 @@ package postgres
 
 import (
 	"database/sql"
+	"errors"
 	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/lib/pq"
-	"userService/libs/errors"
+	customErr "userService/libs/errors"
 	"userService/services/user-service/config"
 	user_service "userService/services/user-service/proto/user-service"
 )
@@ -12,30 +13,34 @@ import (
 type Database interface {
 	SignIn(user *user_service.User) (*user_service.User, error)
 	SignUp(user *user_service.User) (*user_service.User, error)
-	CheckUser(username string) error
-	CheckCode(code string) error
+	CheckUser(user *user_service.User) error
+	CheckCode(code string, user *user_service.User) error
 	RefreshPassword(user *user_service.User) error
-	CreateNotification(username, code string) error
+	CreateNotification(user *user_service.User, code string) error
 }
 
 type DatabaseConn struct {
 	conn *sql.DB
 }
 
-func (db DatabaseConn) CreateNotification(username, code string) error {
+func (db DatabaseConn) CreateNotification(user *user_service.User, code string) error {
 	query := `
 				INSERT INTO notification
 				    (username, code)
 				VALUES
 				    ($1, $2)
+				RETURNING username, code
 				`
 
-	_, err := db.conn.Exec(query, username, code)
+	var usernameCheck, codeCheck string
+
+	err := db.conn.QueryRow(query, &user.Username, code).Scan(&usernameCheck, &codeCheck)
 	if err != nil {
-		return err
+		return customErr.HandleDatabaseError(err)
 	}
 
 	return err
+
 }
 
 func (db DatabaseConn) RefreshPassword(user *user_service.User) error {
@@ -43,41 +48,48 @@ func (db DatabaseConn) RefreshPassword(user *user_service.User) error {
 		UPDATE users
 		SET password = $2
 		WHERE username = $1
+		RETURNING id, username
 			`
 
-	_, err := db.conn.Exec(query, &user.Username, &user.Password)
+	userOut := &user_service.User{}
+
+	err := db.conn.QueryRow(query, &user.Username, &user.Password).Scan(&userOut.Id, &userOut.Username)
 	if err != nil {
-		return err
+		return customErr.HandleDatabaseError(err)
 	}
 
 	return err
 }
 
-func (db DatabaseConn) CheckCode(code string) error {
+func (db DatabaseConn) CheckCode(code string, user *user_service.User) error {
 	query := `
 			SELECT username, code
 			FROM notification 
-			WHERE code = $1
+			WHERE code = $1 and username = $2
 			`
 
-	_, err := db.conn.Exec(query, code)
+	var usernameCheck, codeCheck string
+
+	err := db.conn.QueryRow(query, code, &user.Username).Scan(&usernameCheck, &codeCheck)
 	if err != nil {
-		return err
+		return errors.New("code error")
 	}
 
 	return err
 }
 
-func (db DatabaseConn) CheckUser(username string) error {
+func (db DatabaseConn) CheckUser(user *user_service.User) error {
 	query := `
-			SELECT id, username
+			SELECT id
 			FROM users 
 			WHERE username = $1
 			`
 
-	_, err := db.conn.Exec(query, username)
+	var usernameCheck int
+
+	err := db.conn.QueryRow(query, &user.Username).Scan(&usernameCheck)
 	if err != nil {
-		return err
+		return errors.New("user not found")
 	}
 
 	return err
@@ -100,7 +112,7 @@ func (db DatabaseConn) SignUp(user *user_service.User) (*user_service.User, erro
 		&userOut.Id,
 	)
 	if err != nil {
-		return nil, err
+		return nil, customErr.HandleDatabaseError(err)
 	}
 
 	return userOut, err
@@ -122,7 +134,7 @@ func (db DatabaseConn) SignIn(user *user_service.User) (*user_service.User, erro
 		&userOut.Username,
 	)
 	if err != nil {
-		return nil, errors.HandleDatabaseError(err)
+		return nil, customErr.HandleDatabaseError(err)
 	}
 
 	return userOut, err
@@ -135,13 +147,13 @@ func NewDatabase() (*DatabaseConn, error) {
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		errors.HandleFatalError(err, "failed to connect to postgres")
+		customErr.HandleFatalError(err, "failed to connect to postgres")
 	}
 
 	err = db.Ping()
 
 	if err != nil {
-		errors.HandleFatalError(err, "failed to connect to postgres")
+		customErr.HandleFatalError(err, "failed to connect to postgres")
 	}
 
 	return &DatabaseConn{conn: db}, err
