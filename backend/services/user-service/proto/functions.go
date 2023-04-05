@@ -49,14 +49,14 @@ func (s Server) RefreshPassword(ctx context.Context,
 		return nil, customErr.LogError(err)
 	}
 
-	err = db.CheckCode(r.Code)
-	if err != nil {
-		return nil, customErr.LogError(err)
-	}
-
 	user := &user_service.User{
 		Username: r.Username,
 		Password: r.Password,
+	}
+
+	err = db.CheckCode(r.Code, user)
+	if err != nil {
+		return nil, customErr.LogError(err)
 	}
 
 	err = db.RefreshPassword(user)
@@ -75,7 +75,11 @@ func (s Server) GetCode(ctx context.Context,
 		return nil, customErr.LogError(err)
 	}
 
-	err = db.CheckUser(r.Username)
+	user := &user_service.User{
+		Username: r.Username,
+	}
+
+	err = db.CheckUser(user)
 	if err != nil {
 		return nil, customErr.LogError(err)
 	}
@@ -87,7 +91,7 @@ func (s Server) GetCode(ctx context.Context,
 
 	code := RandStringBytes(6)
 
-	err = db.CreateNotification(r.Username, code)
+	err = db.CreateNotification(user, code)
 	if err != nil {
 		return nil, customErr.LogError(err)
 	}
