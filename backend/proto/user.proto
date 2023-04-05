@@ -14,6 +14,22 @@ service UserService {
     };
   }
 
+  //refresh password
+  rpc RefreshPassword (RefreshPasswordRequest) returns (RefreshPasswordResponse) {
+    option (google.api.http) = {
+      post: "/refreshPassword"
+      body: "*"
+    };
+  }
+
+  //code to phone
+  rpc GetCode (GetCodeRequest) returns (GetCodeResponse) {
+    option (google.api.http) = {
+      post: "/getcode"
+      body: "*"
+    };
+  }
+
   //Sign up
   rpc SignUp (SignUpRequest) returns (SignUpResponse) {
     option (google.api.http) = {
@@ -45,6 +61,33 @@ service UserService {
     };
   }
 
+}
+
+//------------------------------------------------------------------------------------------------------------------
+//  refresh password
+//------------------------------------------------------------------------------------------------------------------
+
+message RefreshPasswordRequest {
+  string code = 1 [(validate.rules).string = {min_len: 1, max_len: 30}];
+  string username = 2 [(validate.rules).string = {min_len: 1, max_len: 30}];
+  string password = 3 [(validate.rules).string = {min_len: 1, max_len: 50}];
+}
+
+message RefreshPasswordResponse {
+  string msg = 1;
+}
+
+//------------------------------------------------------------------------------------------------------------------
+//  code to phone
+//------------------------------------------------------------------------------------------------------------------
+
+message GetCodeRequest {
+  string username = 1 [(validate.rules).string = {min_len: 1, max_len: 30}];
+}
+
+message GetCodeResponse {
+  string code = 1;
+  string token = 2;
 }
 
 //------------------------------------------------------------------------------------------------------------------
