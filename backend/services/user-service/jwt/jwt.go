@@ -34,6 +34,38 @@ func GetRefreshToken() (string, error) {
 	return tokenString, err
 }
 
+func GetRefreshPasswordToken() (string, error) {
+	conf := config.UserConfig()
+	jwtSecretToken := conf.RefreshPassword
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"nbf": time.Now().Unix(),
+		"exp": time.Now().Add(time.Minute * 5).Unix(),
+	})
+
+	tokenString, err := token.SignedString([]byte(jwtSecretToken))
+
+	return tokenString, err
+}
+
+func CheckRefreshPasswordToken(tokenString string) (error, jwt.MapClaims) {
+	conf := config.UserConfig()
+	jwtSecretToken := conf.RefreshPassword
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(jwtSecretToken), nil
+	})
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return nil, claims
+	} else {
+		return err, nil
+	}
+}
+
 func GetJWTToken() (string, error) {
 	conf := config.UserConfig()
 	jwtSecretToken := conf.Jwt

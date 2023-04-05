@@ -1,4 +1,4 @@
-package repository
+package postgres
 
 import (
 	"database/sql"
@@ -12,10 +12,75 @@ import (
 type Database interface {
 	SignIn(user *user_service.User) (*user_service.User, error)
 	SignUp(user *user_service.User) (*user_service.User, error)
+	CheckUser(username string) error
+	CheckCode(code string) error
+	RefreshPassword(user *user_service.User) error
+	CreateNotification(username, code string) error
 }
 
 type DatabaseConn struct {
 	conn *sql.DB
+}
+
+func (db DatabaseConn) CreateNotification(username, code string) error {
+	query := `
+				INSERT INTO notification
+				    (username, code)
+				VALUES
+				    ($1, $2)
+				`
+
+	_, err := db.conn.Exec(query, username, code)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (db DatabaseConn) RefreshPassword(user *user_service.User) error {
+	query := `
+		UPDATE users
+		SET password = $2
+		WHERE username = $1
+			`
+
+	_, err := db.conn.Exec(query, &user.Username, &user.Password)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (db DatabaseConn) CheckCode(code string) error {
+	query := `
+			SELECT username, code
+			FROM notification 
+			WHERE code = $1
+			`
+
+	_, err := db.conn.Exec(query, code)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (db DatabaseConn) CheckUser(username string) error {
+	query := `
+			SELECT id, username
+			FROM users 
+			WHERE username = $1
+			`
+
+	_, err := db.conn.Exec(query, username)
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func (db DatabaseConn) SignUp(user *user_service.User) (*user_service.User, error) {
